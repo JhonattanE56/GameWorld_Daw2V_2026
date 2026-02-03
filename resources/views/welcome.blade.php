@@ -1,7 +1,7 @@
 @extends('components/layout')
 
 @section('title')
-    My game company
+    &#127918;GameWorld&#128126;
 @endsection
 
 @section('main')
