@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ratings', function (Blueprint $table) {
-            $table->char('id', 36)->primary(true);
+            $table->uuid('id')->primary(true);
             $table->char('user_id', 36);
             $table->char('game_id', 36);
             $table->unsignedTinyInteger('score');
