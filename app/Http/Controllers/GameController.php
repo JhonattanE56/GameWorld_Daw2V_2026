@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -12,7 +13,8 @@ class GameController extends Controller
      */
     public function index()
     {
-        return view('games.index', ['items' => Game::all()]);
+        // TODO: Show only NOT DELETED elements.
+        return view('games.index', ['items' => Game::where('deleted_at', null)->get()->sortByDesc('num')]);
     }
 
     /**
@@ -36,7 +38,12 @@ class GameController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $item = Game::where('id', $id)->get()->first();
+        if (! $item instanceof Model) {
+            abort(404);
+        }
+
+        return view('games.show', ['item' => $item]);
     }
 
     /**
