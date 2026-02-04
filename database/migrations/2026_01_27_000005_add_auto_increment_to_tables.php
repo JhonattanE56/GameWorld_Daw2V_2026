@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // TODO: Add to users
+
+        // Games autoincremental
         Schema::table('games', function (Blueprint $table) {
             $table->unsignedInteger('num')->unique()->after('id');
         });
-
         DB::statement('ALTER TABLE `games` MODIFY `num` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE');
     }
     /**
