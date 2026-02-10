@@ -5,6 +5,7 @@
 @endsection
 
 @section('main')
+    <button type="button" class="button btn-primary"><a href="{{ route('games.create') }}">Crear juego</a></button>
     <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered align-middle">
             <thead class="table-dark">
