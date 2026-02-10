@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,7 +17,6 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-
     use HasUuids;
     use Notifiable;
     use SoftDeletes;
@@ -59,4 +59,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relationships
+    public function games(): HasMany
+    {
+        return $this->hasMany(Game::class);
+    }
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Custom functions
 }
