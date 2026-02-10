@@ -69,7 +69,11 @@ class GameController extends Controller
         $game->age_rating = GameAgeRatingEnum::from($request['age_rating']);
         $game->description = $request['description'];
         $game->user_id = 'jhona';
-        $game->image = '';
+        if ($request->hasFile('image')) {
+            // /public/games
+            $path = $request->file('image')->store('games', 'public');
+            $game->image = $path;
+        }
         if ($game->saveOrFail()) {
             return view('games.show', ['item' => $game]);
         }
@@ -82,7 +86,7 @@ class GameController extends Controller
     public function show(string $id)
     {
         $item = Game::where('id', $id)->get()->first();
-        if (! $item instanceof Model) {
+        if (!$item instanceof Model) {
             abort(404);
         }
 

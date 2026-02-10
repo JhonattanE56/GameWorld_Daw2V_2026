@@ -5,47 +5,53 @@
 @endsection
 
 @section('main')
-    <button type="button" class="button btn-primary"><a href="{{ route('games.create') }}">Crear juego</a></button>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered align-middle">
-            <thead class="table-dark">
-            <tr>
-                <th scope="col" class="text-center">ID</th>
-                <th scope="col" class="text-center">Título</th>
-                <th scope="col" class="text-center">Fecha de publicación</th>
-                <th scope="col" class="text-center">Plataforma</th>
-                <th scope="col" class="text-center">Tipo</th>
-                <th scope="col" class="text-center">Clasificación</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($items as $item)
-                <tr>
-                    <td class="text-center">{{ $item['num'] }}</td>
-                    <td class="text-center">
-                        <a href="{{ route('games.show', ['game' => $item['id']]) }}">
-                            {{ $item['title'] }}
-                        </a>
-                    </td>
-                    <td class="text-center">{{ $item['date_released'] }}</td>
-                    <td class="text-center">{{ $item['platform'] }}</td>
-                    <td class="text-center">{{ $item['gamemode'] }}</td>
-                    <td class="text-center">{{ $item['age_rating'] }}</td>
-                </tr>
-            @endforeach
+    <div class="container my-4">
+        @if($items->isEmpty())
+            <div class="alert alert-info text-center">
+                No hay juegos disponibles en este momento.
+            </div>
+        @else
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach($items as $item)
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0">
+                            @if(!empty($item['image']))
+                                <img src="{{ asset('storage/' . $item['image']) }}"
+                                     class="card-img-top img-fluid"
+                                     alt="{{ $item['title'] }}"
+                                     style="height: 180px; object-fit: cover;">
+                            @else
+                                <img src="{{ asset('storage/placeholder-game.jpg') }}"
+                                     class="card-img-top img-fluid"
+                                     alt="{{ $item['title'] }}"
+                                     style="height: 180px; object-fit: cover;">
+                            @endif
 
-            </tbody>
-            <tfoot class="table-light">
-            <tr>
-                <th scope="col" class="text-center">ID</th>
-                <th scope="col" class="text-center">Título</th>
-                <th scope="col" class="text-center">Fecha de publicación</th>
-                <th scope="col" class="text-center">Plataforma</th>
-                <th scope="col" class="text-center">Tipo</th>
-                <th scope="col" class="text-center">Clasificación</th>
-            </tr>
-            </tfoot>
-        </table>
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="text-muted mb-1 text-truncate">
+                                    {{ $item['title'] }}
+                                </h6>
+
+                                <h5 class="card-title mb-2 text-truncate" title="{{ $item['title'] }}">
+                                    {{ $item['title'] }}
+                                </h5>
+
+                                <p class="card-text mb-3">
+                                    <span class="fw-semibold">Rating:</span>
+                                    {{ number_format($item['rating'], 1) }}
+                                </p>
+
+                                <div class="mt-auto">
+                                    <a href="{{ route('games.show', $item['id']) }}"
+                                       class="btn btn-primary w-100">
+                                        View more
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 @endsection
-
