@@ -14,18 +14,21 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin user
-        User::factory()
-            ->create([
-                'id' => fake()->uuid(),
-                'name' => 'Admin',
-                'email' => 'admin@admin.com',
-                'email_verified_at' => now(),
-                'role' => UserRoleEnum::ADMIN,
-            ]);
+        User::factory()->create([
+            'id' => fake()->uuid(),
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'email_verified_at' => now(),
+            'role' => UserRoleEnum::ADMIN,
+        ]);
 
-        // Normal users
-        User::factory()
-            ->count(3)
-            ->create();
+        // Normal user
+        User::factory()->create([
+            'id' => fake()->uuid(),
+            'name' => 'Test',
+            'email' => 'test@test.com',
+            'email_verified_at' => now(),
+            'role' => UserRoleEnum::USER,
+        ]);
     }
 }
