@@ -42,6 +42,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/games">Catalogo de juegos</a>
                     </li>
+                    {{--TODO: Add login validations--}}
                     <li class="nav-item">
                         <a class="nav-link" href="/profile">Mi perfil</a>
                     </li>
