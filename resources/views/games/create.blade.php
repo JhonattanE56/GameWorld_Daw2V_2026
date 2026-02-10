@@ -93,7 +93,7 @@
                 {{-- Descripción --}}
                 <div class="mb-3">
                     <label for="description" class="form-label">Descripción</label>
-                    <textarea name="description" id="description" class="form-control"rows="4"></textarea>
+                    <textarea name="description" id="description" class="form-control" rows="4"></textarea>
                 </div>
 
                 {{-- Imagen (upload) --}}
