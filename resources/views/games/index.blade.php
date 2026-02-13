@@ -44,7 +44,7 @@
                                 <div class="mt-auto">
                                     <a href="{{ route('games.show', $item['id']) }}"
                                        class="btn btn-primary w-100">
-                                        View more
+                                        Ver más
                                     </a>
                                 </div>
                             </div>
