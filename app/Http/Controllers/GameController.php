@@ -85,12 +85,7 @@ class GameController extends Controller
      */
     public function show(string $id)
     {
-        $item = Game::where('id', $id)->get()->first();
-        if (!$item instanceof Model) {
-            abort(404);
-        }
-
-        return view('games.show', ['item' => $item]);
+        return view('games.show', ['item' => Game::findOrFail($id)]);
     }
 
     /**
@@ -114,10 +109,10 @@ class GameController extends Controller
      */
     public function destroy(string $id)
     {
-        $game = Game::where('id', $id)->get()->first();
+        $game = Game::findOrFail($id);
         $game->deleted_at = new \DateTimeImmutable()->format('Y-m-d');
         $game->update();
 
-        return view('games.show');
+        return $this->index();
     }
 }
