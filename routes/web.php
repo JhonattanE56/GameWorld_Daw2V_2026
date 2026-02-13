@@ -23,7 +23,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // Custom routes
-
 Route::resource('games', GameController::class);
 Route::resource('ratings', RatingController::class);
 Route::resource('comments', CommentController::class);
