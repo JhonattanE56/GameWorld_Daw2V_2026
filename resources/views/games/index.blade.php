@@ -5,6 +5,9 @@
 @endsection
 
 @section('main')
+    @auth
+        <a href="{{ route('games.create') }}">Crear juego</a>
+    @endauth
     <div class="container my-4">
         @if($items->isEmpty())
             <div class="alert alert-info text-center">
@@ -16,7 +19,7 @@
                     <div class="col">
                         <div class="card h-100 shadow-sm border-0">
                             @if(!empty($item['image']))
-                                <img src="{{ asset('storage/' . $item['image']) }}"
+                                <img src="{{ asset("storage/{$item['image']}") }}"
                                      class="card-img-top img-fluid"
                                      alt="{{ $item['title'] }}"
                                      style="height: 180px; object-fit: cover;">

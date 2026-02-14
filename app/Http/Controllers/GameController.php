@@ -8,8 +8,8 @@ use App\Enums\GameGenreEnum;
 use App\Enums\GamePlatformEnum;
 use App\Helpers\CustomFunctions;
 use App\Models\Game;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * GameController
@@ -21,8 +21,7 @@ class GameController extends Controller
      */
     public function index()
     {
-        // TODO: Show only NOT DELETED elements.
-        return view('games.index', ['items' => Game::where('deleted_at', null)->get()->sortByDesc('num')]);
+        return view('games.index', ['items' => Game::whereNull('deleted_at')->get()->sortByDesc('num')]);
     }
 
     /**
@@ -45,39 +44,39 @@ class GameController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(
-            [
-                'title' => 'required|unique:games|max:255',
-                'developer' => 'required',
-                'publisher' => 'required',
-                'date_released' => 'required',
-                'platform' => 'required',
-                'gamemode' => 'required',
-                'age_rating' => 'required',
-                'description' => 'required',
-            ]
-        );
+        $validated = $request->validate([
+            'title' => 'required|unique:games,title|max:255',
+            'developer' => 'required|string|max:255',
+            'publisher' => 'required|string|max:255',
+            'date_released' => 'required|date',
+            'platform' => 'required',
+            'genre' => 'required',
+            'gamemode' => 'required',
+            'age_rating' => 'required',
+            'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+        ]);
         $game = new Game;
         $game->id = CustomFunctions::generateUniqueId();
-        $game->title = $request['title'];
-        $game->developer = $request['developer'];
-        $game->publisher = $request['publisher'];
-        $game->date_released = $request['date_released'];
-        $game->platform = GamePlatformEnum::from($request['platform']);
-        $game->genre = GameGenreEnum::from($request['genre']);
-        $game->gamemode = GameGamemodeEnum::from($request['gamemode']);
-        $game->age_rating = GameAgeRatingEnum::from($request['age_rating']);
-        $game->description = $request['description'];
-        $game->user_id = 'jhona';
+        $game->title = $validated['title'];
+        $game->developer = $validated['developer'];
+        $game->publisher = $validated['publisher'];
+        $game->date_released = $validated['date_released'];
+        $game->platform = GamePlatformEnum::from($validated['platform']);
+        $game->genre = GameGenreEnum::from($validated['genre']);
+        $game->gamemode = GameGamemodeEnum::from($validated['gamemode']);
+        $game->age_rating = GameAgeRatingEnum::from($validated['age_rating']);
+        $game->description = $validated['description'];
+        $game->user_id = Auth::id();
+
         if ($request->hasFile('image')) {
-            // /public/games
             $path = $request->file('image')->store('games', 'public');
             $game->image = $path;
         }
-        if ($game->saveOrFail()) {
-            return view('games.show', ['item' => $game]);
-        }
-        dd($game, $request);
+
+        $game->saveOrFail();
+
+        return redirect()->route('games.show', $game->id)->with('status', 'Juego creado correctamente.');
     }
 
     /**
@@ -85,7 +84,9 @@ class GameController extends Controller
      */
     public function show(string $id)
     {
-        return view('games.show', ['item' => Game::findOrFail($id)]);
+        $game = Game::findOrFail($id);
+
+        return view('games.show', ['item' => $game]);
     }
 
     /**
@@ -93,7 +94,15 @@ class GameController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $game = Game::findOrFail($id);
+
+        return view('games.edit', [
+            'item' => $game,
+            'gamemodes' => CustomFunctions::getEnumKeyLabelArray(GameGamemodeEnum::class),
+            'age_ratings' => CustomFunctions::getEnumKeyLabelArray(GameAgeRatingEnum::class),
+            'genres' => CustomFunctions::getEnumKeyLabelArray(GameGenreEnum::class),
+            'platforms' => CustomFunctions::getEnumKeyLabelArray(GamePlatformEnum::class),
+        ]);
     }
 
     /**
@@ -101,7 +110,40 @@ class GameController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $game = Game::findOrFail($id);
+
+        $validated = $request->validate([
+            'title' => 'required|max:255|unique:games,title,'.$game->id,
+            'developer' => 'required|string|max:255',
+            'publisher' => 'required|string|max:255',
+            'date_released' => 'required|date',
+            'platform' => 'required',
+            'genre' => 'required',
+            'gamemode' => 'required',
+            'age_rating' => 'required',
+            'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $game->title = $validated['title'];
+        $game->developer = $validated['developer'];
+        $game->publisher = $validated['publisher'];
+        $game->date_released = $validated['date_released'];
+        $game->platform = GamePlatformEnum::from($validated['platform']);
+        $game->genre = GameGenreEnum::from($validated['genre']);
+        $game->gamemode = GameGamemodeEnum::from($validated['gamemode']);
+        $game->age_rating = GameAgeRatingEnum::from($validated['age_rating']);
+        $game->description = $validated['description'];
+
+        if ($request->hasFile('image')) {
+            // TODO: optionally delete old image from storage
+            $path = $request->file('image')->store('games', 'public');
+            $game->image = $path;
+        }
+
+        $game->saveOrFail();
+
+        return redirect()->route('games.show', $game->id)->with('status', 'Juego actualizado correctamente.');
     }
 
     /**
@@ -110,9 +152,8 @@ class GameController extends Controller
     public function destroy(string $id)
     {
         $game = Game::findOrFail($id);
-        $game->deleted_at = new \DateTimeImmutable()->format('Y-m-d');
-        $game->update();
+        $game->delete(); // SoftDeletes will set deleted_at
 
-        return $this->index();
+        return redirect()->route('games.index')->with('status', 'Juego eliminado correctamente.');
     }
 }

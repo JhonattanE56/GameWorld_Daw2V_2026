@@ -72,7 +72,7 @@
 
                                 <dt class="col-sm-4">Clasificación por edad</dt>
                                 <dd class="col-sm-8">
-                                    {{ $item->agerating ?: '—' }}
+                                    {{ $item->age_rating ?: '—' }}
                                 </dd>
                             </dl>
                         </div>
