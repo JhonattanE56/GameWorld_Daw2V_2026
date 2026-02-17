@@ -93,22 +93,100 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between">
+                    {{-- Sección de valoraciones --}}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Valoraciones</h5>
+
+                            @if ($item->ratings->count() > 0)
+                                @php
+                                    $average = number_format($item->ratings->avg('rating'), 1);
+                                @endphp
+
+                                <p class="mb-1">
+                                    Valoración media:
+                                    <strong>{{ $average }}/5</strong>
+                                    <span class="text-warning ms-2">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= round($average))
+                                                ★
+                                            @else
+                                                ☆
+                                            @endif
+                                        @endfor
+                                    </span>
+                                </p>
+                                <p class="text-muted mb-0">
+                                    Total de valoraciones: {{ $item->ratings->count() }}
+                                </p>
+                            @else
+                                <p class="text-muted mb-0">
+                                    Este juego aún no tiene valoraciones.
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Sección de comentarios --}}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Comentarios</h5>
+
+                            @if ($item->comments->count() > 0)
+                                <ul class="list-group">
+                                    @foreach ($item->comments as $comment)
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>{{ $comment->user->name ?? 'Usuario' }}</strong>
+                                                <span class="text-muted small">
+                                                    {{ $comment->created_at?->format('d/m/Y H:i') }}
+                                                </span>
+                                            </div>
+                                            <p class="mb-0 mt-2">
+                                                {{ $comment->content ?? $comment->comment }}
+                                            </p>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-muted mb-0">
+                                    Todavía no hay comentarios para este juego.
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ url('games') }}" class="btn btn-outline-secondary">
                             Volver al catálogo
                         </a>
-                        <form action="{{ route('games.destroy', $item->id) }}" method="POST"
-                              onsubmit="return confirm('¿Seguro que quieres eliminar este juego?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">
-                                Eliminar
-                            </button>
-                        </form>
+
+                        <div class="d-flex gap-2">
+                            @auth
+                                <a href="{{ route('ratings.create', ['game_id' => $item->id]) }}"
+                                   class="btn btn-outline-primary">
+                                    Valorar
+                                </a>
+
+                                <a href="{{ route('comments.create', ['game_id' => $item->id]) }}"
+                                   class="btn btn-outline-secondary">
+                                    Comentar
+                                </a>
+                            @endauth
+
+                            <form action="{{ route('games.destroy', $item->id) }}" method="POST"
+                                  onsubmit="return confirm('¿Seguro que quieres eliminar este juego?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
                     </div>
+
                 </div>
             </div>
-
         </div>
     </div>
 @endsection
